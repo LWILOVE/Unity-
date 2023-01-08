@@ -1,0 +1,70 @@
+滚球游戏，是我入坑Unity写的第一个小游戏，在这个游戏里我除了学习了一些基础的Unity操作还学会了主要三个功能，移动，接触以及相机跟随的人工实现
+1.控制球体移动的实现
+开始的时候我一直觉得控制游戏物体的运动是需要一堆代码的，不过自己写了发现真的好像只需要一点点代码就行了。
+    void Update()
+    {
+        //与键盘进行交互
+        //得到一个小数
+        //GetAxis：键盘上每个键都代表一定的数
+        //默认返回值是0
+        //Horizontal: 控制水平方向的代码  AD
+        //按下A是从0到-1，松开就从-1变回0
+        //A和D相反，D是从0到1 
+        //Vertical:控制竖直方向的代码  WS
+        //按下W是0-1  S是0-（-1）
+        //两个都可以用方向键上下左右代替
+        float h = Input.GetAxis("Horizontal");
+        float v = Input.GetAxis("Vertical");
+        //控制球的运动
+        rd.AddForce(new Vector3(h,0,v)*2    );
+
+    }
+代码解释：
+通过Unity自带的Input系列代码加上施力的手段控制球体的运动（注：因为是施力的方法，所以球体必须添加了刚体组件）
+2.吃道具得分的实现
+在游戏里，吃道具往往也是很重要的，而想要实现吃道具也是很简单的，就是通过触发器就行。
+    //创建触发检测的系统事件
+    //除为进入触发区域发动外，其余相同
+    //stay 在触发区域内持续发动  enter进入时发动 exit出去时发动
+    private void OnTriggerEnter(Collider other)
+    {
+        //参数：碰撞器   
+        if (other.tag == "Food")
+        {
+            //销毁被进入到触发区域的物体
+            Destroy(other.gameObject);
+            //销毁被碰到的物体的碰撞器组件
+            //Destroy(collision.collider);
+            //吃到食物加分
+            score++;
+            //更新UI显示,使文本组件显示分数
+            scoreText.text = "分数："+score;
+
+            if (score == 5)
+            {
+                //当游戏达到要求时，激活胜利物体 
+                winText.SetActive(true);
+            }
+        }
+    }
+    
+3.相机跟随的实现
+ 实现相机跟随的大抵过程就两步：1.获取相机和玩家的距离  2.使这个距离不变
+ 要是想要实现更加灵活的相机问题，可以通过动画制作来实现。
+     public Transform playerTransform;
+    private Vector3 offset; //定义位置差变量
+    // Start is called before the first frame update
+    void Start()
+    {
+        //得到相机位置 transform.position
+        //获取相机和物体的位置差
+        offset = transform.position - playerTransform.position;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        //使相机位置始终跟随小球
+        transform.position = playerTransform.position+offset;
+    }
+
