@@ -1,0 +1,36 @@
+原本以为打砖块的难度会大点，不过现在看看发现因为Unity的物理模拟是非常好的，所以实现这个游戏变得无比简单。
+制作这个游戏学到的新知识是使用位置的方法控制移动和游戏预制体的创建。
+1.使用位置的方法控制移动（相机移动）：
+    void Update()
+    {
+        //获取水平运动方法 AD 
+        float h = Input.GetAxis("Horizontal");
+        //获取上下运动方法
+        float v = Input.GetAxis("Vertical");
+        //获取前后运动方法 自己设置的
+        float g = Input.GetAxis("GoAndOut");
+        //进行运动
+        transform.Translate(new Vector3(h,v,g)*Time.deltaTime*speed);
+        //加入Time.deltaTime:控制镜头的移动速度（一次一帧的速度）
+        //speed：控制镜头1S行动的速度
+        //获取上一次被调用到下一被调用花费的时间
+        //Time.deltaTime 
+        //运用1/Time.deltaTime得到的数字就是帧数即FPS，用于判定游戏流畅度
+    }
+  
+2.游戏预制体的创建（克隆）
+    void Update()
+    {
+        //Input:与输入有关的类
+        //GetMouseButtonDown:判断鼠标是否按下  0 左键  1右键
+        if (Input.GetMouseButtonDown(0))
+        {
+            //接收新创建的游戏物体对象
+            GameObject bullet = GameObject.Instantiate(bulletPrefab,transform.position,transform.rotation);
+            //GetComponent：获取游戏物体的组件并接收
+            Rigidbody rd = bullet.GetComponent<Rigidbody>();
+            //rd.AddForce(Vector3.forward);
+            //设置游戏物体的初速度
+            rd.velocity = Vector3.forward * 35;
+        }
+    }
